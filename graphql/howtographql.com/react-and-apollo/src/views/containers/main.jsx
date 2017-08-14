@@ -1,6 +1,7 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
 import { Layout } from 'antd';
+import CreateLink from './create-link';
 import Links from './links';
 
 const Main = () => (
@@ -15,7 +16,8 @@ const Main = () => (
       bottom: 0,
     }}
   >
-    <Route path="/" component={Links} />
+    <Route path="/" exact component={Links} />
+    <Route path="/create" component={CreateLink} />
   </Layout>
 );
 

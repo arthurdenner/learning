@@ -1,20 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { graphql, gql } from 'react-apollo';
+import { graphql } from 'react-apollo';
 import { map } from 'lodash/fp';
+import { ALL_LINKS_QUERY } from '~/gql-queries';
 import FlexElement from '~/views/components/flex-element';
 import Link from '~/views/components/link';
-
-const ALL_LINKS_QUERY = gql`
-  query allLinksQuery {
-    allLinks {
-      id
-      createdAt
-      url
-      description
-    }
-  }
-`;
 
 const Links = ({ allLinksQuery }) => {
   if (allLinksQuery && allLinksQuery.loading) {

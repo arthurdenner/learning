@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { graphql } from 'react-apollo';
 import { get } from 'lodash/fp';
 import { Button, Input, Form } from 'antd';
-import { CREATE_LINK_MUTATION } from '~/gql-queries';
+import { ALL_LINKS_QUERY, CREATE_LINK_MUTATION } from '~/gql-queries';
 import FlexElement from '~/views/components/flex-element';
 import actions from '~/store/actions';
 import * as selectors from '~/store/selectors';
@@ -18,6 +18,7 @@ class CreateLink extends PureComponent {
     createLinkMutation: PropTypes.func.isRequired,
     form: PropTypes.object.isRequired,
     handleClick: PropTypes.func.isRequired,
+    history: PropTypes.object.isRequired,
     postedById: PropTypes.string.isRequired,
   };
 
@@ -28,7 +29,7 @@ class CreateLink extends PureComponent {
   }
 
   handleSubmit = async () => {
-    const { form: { validateFields }, createLinkMutation, postedById } = this.props;
+    const { createLinkMutation, form: { validateFields }, history, postedById } = this.props;
 
     if (!postedById) {
       console.error('No user logged in');
@@ -38,8 +39,21 @@ class CreateLink extends PureComponent {
     validateFields((err, variables) => {
       if (!err) {
         createLinkMutation({
-          variables: { ...variables, postedById },
+          variables: {
+            ...variables,
+            postedById,
+          },
+          update: (store, { data: { createLink } }) => {
+            const data = store.readQuery({ query: ALL_LINKS_QUERY });
+
+            data.allLinks.splice(0, 0, createLink);
+            store.writeQuery({
+              query: ALL_LINKS_QUERY,
+              data,
+            });
+          },
         });
+        history.push('/');
       } else {
         console.log(err);
       }

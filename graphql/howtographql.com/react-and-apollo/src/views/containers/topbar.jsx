@@ -37,6 +37,14 @@ const Topbar = ({ handleClick, isUserLogged, logout, selectedTab }) => (
             </NavLink>
           </Menu.Item>
         )}
+        <Menu.Item key="search">
+          <NavLink to="/search">
+            <span>
+              <Icon type="search" />
+              <span className="nav-text">Search</span>
+            </span>
+          </NavLink>
+        </Menu.Item>
       </Menu>
       {isUserLogged ? (
         <Menu

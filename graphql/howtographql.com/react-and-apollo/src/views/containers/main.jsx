@@ -8,6 +8,7 @@ import FlexElement from '~/views/components/flex-element';
 import CreateLink from './create-link';
 import Links from './links';
 import Login from './login';
+import Search from './search';
 import Topbar from './topbar';
 import styles from './main.less';
 
@@ -33,6 +34,7 @@ const Main = ({ isAppLoaded }) => (
             <Route path="/" exact component={Links} />
             <Route path="/submit" component={CreateLink} />
             <Route path="/login" component={Login} />
+            <Route path="/search" component={Search} />
           </Switch>
         </Content>
       </FlexElement>

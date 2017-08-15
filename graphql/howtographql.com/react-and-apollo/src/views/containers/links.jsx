@@ -1,12 +1,12 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { graphql } from 'react-apollo';
-import { map } from 'lodash/fp';
+import { graphql, gql } from 'react-apollo';
+import { getOr } from 'lodash/fp';
 import { ALL_LINKS_QUERY } from '~/gql-queries';
 import FlexElement from '~/views/components/flex-element';
-import Link from '~/views/components/link';
 import actions from '~/store/actions';
+import Link from './link';
 
 class Links extends PureComponent {
   static propTypes = {
@@ -21,7 +21,60 @@ class Links extends PureComponent {
   componentDidMount() {
     const { handleClick } = this.props;
 
+    this.subscribeToNewLinks();
     handleClick('links');
+  }
+
+  updateCacheAfterVote = (store, createVote, linkId) => {
+    const data = store.readQuery({ query: ALL_LINKS_QUERY });
+    const votedLink = data.allLinks.find(link => link.id === linkId);
+
+    votedLink.votes = createVote.link.votes;
+
+    store.writeQuery({ query: ALL_LINKS_QUERY, data });
+  }
+
+  subscribeToNewLinks = () => {
+    const { allLinksQuery } = this.props;
+
+    allLinksQuery.subscribeToMore({
+      document: gql`
+        subscription {
+          Link(filter: {
+            mutation_in: [CREATED]
+          }) {
+            node {
+              id
+              url
+              description
+              createdAt
+              postedBy {
+                id
+                name
+              }
+              votes {
+                id
+                user {
+                  id
+                }
+              }
+            }
+          }
+        }
+      `,
+      updateQuery: (previous, { subscriptionData }) => {
+        const newAllLinks = [
+          subscriptionData.data.Link.node,
+          ...previous.allLinks,
+        ];
+        const result = {
+          ...previous,
+          allLinks: newAllLinks,
+        };
+
+        return result;
+      },
+    });
   }
 
   render() {
@@ -35,13 +88,18 @@ class Links extends PureComponent {
       return <p>An error occured!</p>;
     }
 
-    const { allLinks } = allLinksQuery;
+    const allLinks = getOr([], 'allLinks', allLinksQuery);
 
     return (
       <FlexElement full column>
-        {map(link => (
-          <Link link={link} key={link.id} />
-        ), allLinks)}
+        {allLinks.map((link, index) => (
+          <Link
+            link={link}
+            key={link.id}
+            index={index + 1}
+            updateStoreAfterVote={this.updateCacheAfterVote}
+          />
+        ))}
       </FlexElement>
     );
   }

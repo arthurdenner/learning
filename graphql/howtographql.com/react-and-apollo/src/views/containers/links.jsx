@@ -9,10 +9,19 @@ import Link from '~/views/components/link';
 import actions from '~/store/actions';
 
 class Links extends PureComponent {
+  static propTypes = {
+    allLinksQuery: PropTypes.object,
+    handleClick: PropTypes.func.isRequired,
+  };
+
+  static defaultProps = {
+    allLinksQuery: {},
+  };
+
   componentDidMount() {
     const { handleClick } = this.props;
 
-    handleClick('item_1');
+    handleClick('links');
   }
 
   render() {
@@ -37,15 +46,6 @@ class Links extends PureComponent {
     );
   }
 }
-
-Links.propTypes = {
-  allLinksQuery: PropTypes.object,
-  handleClick: PropTypes.func.isRequired,
-};
-
-Links.defaultProps = {
-  allLinksQuery: {},
-};
 
 const mapDispatchToProps = dispatch => ({
   handleClick: key => dispatch(actions.app.selectTab([key])),

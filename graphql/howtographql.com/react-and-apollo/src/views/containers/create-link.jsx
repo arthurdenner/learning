@@ -2,28 +2,44 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { graphql } from 'react-apollo';
+import { get } from 'lodash/fp';
 import { Button, Input, Form } from 'antd';
 import { CREATE_LINK_MUTATION } from '~/gql-queries';
 import FlexElement from '~/views/components/flex-element';
 import actions from '~/store/actions';
+import * as selectors from '~/store/selectors';
 
 const rules = {
   rules: [{ required: true, message: 'Required field!' }],
 };
 
 class CreateLink extends PureComponent {
+  static propTypes = {
+    createLinkMutation: PropTypes.func.isRequired,
+    form: PropTypes.object.isRequired,
+    handleClick: PropTypes.func.isRequired,
+    postedById: PropTypes.string.isRequired,
+  };
+
   componentDidMount() {
     const { handleClick } = this.props;
 
-    handleClick('item_2');
+    handleClick('submit');
   }
 
   handleSubmit = async () => {
-    const { form: { validateFields }, createLinkMutation } = this.props;
+    const { form: { validateFields }, createLinkMutation, postedById } = this.props;
+
+    if (!postedById) {
+      console.error('No user logged in');
+      return;
+    }
 
     validateFields((err, variables) => {
       if (!err) {
-        createLinkMutation({ variables });
+        createLinkMutation({
+          variables: { ...variables, postedById },
+        });
       } else {
         console.log(err);
       }
@@ -54,11 +70,9 @@ class CreateLink extends PureComponent {
   }
 }
 
-CreateLink.propTypes = {
-  createLinkMutation: PropTypes.func.isRequired,
-  form: PropTypes.object.isRequired,
-  handleClick: PropTypes.func.isRequired,
-};
+const mapStateToProps = state => ({
+  postedById: get('user.id', selectors.getUserData(state)),
+});
 
 const mapDispatchToProps = dispatch => ({
   handleClick: key => dispatch(actions.app.selectTab([key])),
@@ -66,5 +80,5 @@ const mapDispatchToProps = dispatch => ({
 
 export default graphql(
   CREATE_LINK_MUTATION, { name: 'createLinkMutation' },
-)(connect(null, mapDispatchToProps,
+)(connect(mapStateToProps, mapDispatchToProps,
 )(Form.create()(CreateLink)));

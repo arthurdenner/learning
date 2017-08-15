@@ -1,21 +1,23 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Input, Form } from 'antd';
+import { connect } from 'react-redux';
 import { graphql } from 'react-apollo';
+import { Button, Input, Form } from 'antd';
 import { CREATE_LINK_MUTATION } from '~/gql-queries';
 import FlexElement from '~/views/components/flex-element';
+import actions from '~/store/actions';
 
 const rules = {
   rules: [{ required: true, message: 'Required field!' }],
 };
 
-const styles = {
-  container: {
-    padding: '0 10px',
-  },
-};
-
 class CreateLink extends PureComponent {
+  componentDidMount() {
+    const { handleClick } = this.props;
+
+    handleClick('item_2');
+  }
+
   handleSubmit = async () => {
     const { form: { validateFields }, createLinkMutation } = this.props;
 
@@ -31,7 +33,7 @@ class CreateLink extends PureComponent {
   render() {
     const { form: { getFieldDecorator } } = this.props;
     return (
-      <FlexElement full column style={styles.container}>
+      <FlexElement full column>
         <Form>
           <Form.Item hasFeedback label="Description">
             {getFieldDecorator('description', rules)(
@@ -44,7 +46,7 @@ class CreateLink extends PureComponent {
             )}
           </Form.Item>
           <Button type="primary" onClick={this.handleSubmit}>
-            Create link
+            Submit
           </Button>
         </Form>
       </FlexElement>
@@ -55,8 +57,14 @@ class CreateLink extends PureComponent {
 CreateLink.propTypes = {
   createLinkMutation: PropTypes.func.isRequired,
   form: PropTypes.object.isRequired,
+  handleClick: PropTypes.func.isRequired,
 };
+
+const mapDispatchToProps = dispatch => ({
+  handleClick: key => dispatch(actions.app.selectTab([key])),
+});
 
 export default graphql(
   CREATE_LINK_MUTATION, { name: 'createLinkMutation' },
-)(Form.create()(CreateLink));
+)(connect(null, mapDispatchToProps,
+)(Form.create()(CreateLink)));

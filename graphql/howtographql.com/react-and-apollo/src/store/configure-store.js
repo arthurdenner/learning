@@ -40,9 +40,9 @@ const configureStore = () => {
   }
 
   store.subscribe(throttle(() => {
-    const { auth, user } = store.getState();
+    const { app: { selectedTab }, auth, user } = store.getState();
 
-    localStorage.setItem(Cache.KEY, JSON.stringify({ auth, user }));
+    localStorage.setItem(Cache.KEY, JSON.stringify({ app: { selectedTab }, auth, user }));
   }, 1000));
 
   store.runSaga(rootSaga);

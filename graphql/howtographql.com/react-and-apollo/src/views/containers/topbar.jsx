@@ -27,6 +27,14 @@ const Topbar = ({ handleClick, isUserLogged, logout, selectedTab }) => (
             </span>
           </NavLink>
         </Menu.Item>
+        <Menu.Item key="top">
+          <NavLink to="/top">
+            <span>
+              <Icon type="to-top" />
+              <span className="nav-text">Top</span>
+            </span>
+          </NavLink>
+        </Menu.Item>
         {isUserLogged && (
           <Menu.Item key="submit">
             <NavLink to="/submit">

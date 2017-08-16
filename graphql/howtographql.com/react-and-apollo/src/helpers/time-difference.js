@@ -15,7 +15,7 @@ const timeDifference = (current, previous) => {
     return 'less than 1 min ago';
   } else if (elapsed < milliSecondsPerHour) {
     return `${Math.round(elapsed / milliSecondsPerMinute)} min ago`;
-  } else if (elapsed < milliSecondsPerDay ) {
+  } else if (elapsed < milliSecondsPerDay) {
     return `${Math.round(elapsed / milliSecondsPerHour)} h ago`;
   } else if (elapsed < milliSecondsPerMonth) {
     return `${Math.round(elapsed / milliSecondsPerDay)} days ago`;
@@ -31,6 +31,6 @@ const timeDifferenceForDate = (date) => {
   const updated = new Date(date).getTime();
 
   return timeDifference(now, updated);
-}
+};
 
 export default timeDifferenceForDate;

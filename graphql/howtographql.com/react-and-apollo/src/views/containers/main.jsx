@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Route, Switch } from 'react-router-dom';
+import { Redirect, Route, Switch } from 'react-router-dom';
 import { Layout } from 'antd';
 import * as selectors from '~/store/selectors';
 import FlexElement from '~/views/components/flex-element';
@@ -31,10 +31,12 @@ const Main = ({ isAppLoaded }) => (
         <Topbar />
         <Content className={styles.content}>
           <Switch>
-            <Route path="/" exact component={Links} />
-            <Route path="/submit" component={CreateLink} />
-            <Route path="/login" component={Login} />
-            <Route path="/search" component={Search} />
+            <Route exact path="/" render={() => <Redirect to="/new/1" />} />
+            <Route exact path="/login" component={Login} />
+            <Route exact path="/submit" component={CreateLink} />
+            <Route exact path="/search" component={Search} />
+            <Route exact path="/top" component={Links} />
+            <Route exact path="/new/:page" component={Links} />
           </Switch>
         </Content>
       </FlexElement>

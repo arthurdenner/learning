@@ -1,8 +1,8 @@
 import { gql } from 'react-apollo';
 
 export const ALL_LINKS_QUERY = gql`
-  query AllLinksQuery {
-    allLinks(orderBy: createdAt_DESC) {
+  query AllLinksQuery($first: Int, $skip: Int, $orderBy: LinkOrderBy) {
+    allLinks(first: $first, skip: $skip, orderBy: $orderBy) {
       id
       createdAt
       url
@@ -17,6 +17,9 @@ export const ALL_LINKS_QUERY = gql`
           id
         }
       }
+    }
+    _allLinksMeta {
+      count
     }
   }
 `;
@@ -124,6 +127,62 @@ export const ALL_LINKS_SEARCH_QUERY = gql`
       }
       votes {
         id
+        user {
+          id
+        }
+      }
+    }
+  }
+`;
+
+export const SUBSCRIBE_NEW_LINKS = gql`
+  subscription {
+    Link(filter: {
+      mutation_in: [CREATED]
+    }) {
+      node {
+        id
+        url
+        description
+        createdAt
+        postedBy {
+          id
+          name
+        }
+        votes {
+          id
+          user {
+            id
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const SUBSCRIBE_NEW_VOTES = gql`
+  subscription {
+    Vote(filter: {
+      mutation_in: [CREATED]
+    }) {
+      node {
+        id
+        link {
+          id
+          url
+          description
+          createdAt
+          postedBy {
+            id
+            name
+          }
+          votes {
+            id
+            user {
+              id
+            }
+          }
+        }
         user {
           id
         }

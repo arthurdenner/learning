@@ -32,7 +32,7 @@ class CreateLink extends PureComponent {
     const { createLinkMutation, form: { validateFields }, history, postedById } = this.props;
 
     if (!postedById) {
-      console.error('No user logged in');
+      // console.error('No user logged in');
       return;
     }
 
@@ -55,7 +55,7 @@ class CreateLink extends PureComponent {
         });
         history.push('/');
       } else {
-        console.log(err);
+        // console.log(err);
       }
     });
   }

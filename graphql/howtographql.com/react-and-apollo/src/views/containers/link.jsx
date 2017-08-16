@@ -23,18 +23,19 @@ class Link extends PureComponent {
     isUserLogged: PropTypes.bool.isRequired,
     link: PropTypes.object.isRequired,
     updateStoreAfterVote: PropTypes.func,
-    userId: PropTypes.string.isRequired,
+    userId: PropTypes.string,
   };
 
   static defaultProps = {
     updateStoreAfterVote: () => 0,
+    userId: '',
   };
 
   voteForLink = async () => {
     const { createVoteMutation, link, updateStoreAfterVote, userId } = this.props;
 
     if (alreadyVoted(link, userId)) {
-      console.log(`User (${userId}) already voted for this link.`);
+      // console.log(`User (${userId}) already voted for this link.`);
       return;
     }
 

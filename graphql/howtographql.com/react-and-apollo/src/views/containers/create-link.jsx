@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { graphql } from 'react-apollo';
 import { get } from 'lodash/fp';
 import { Button, Input, Form } from 'antd';
+import { LINKS_PER_PAGE } from 'constants';
 import { ALL_LINKS_QUERY, CREATE_LINK_MUTATION } from '~/gql-queries';
 import FlexElement from '~/views/components/flex-element';
 import actions from '~/store/actions';
@@ -44,16 +45,23 @@ class CreateLink extends PureComponent {
             postedById,
           },
           update: (store, { data: { createLink } }) => {
-            const data = store.readQuery({ query: ALL_LINKS_QUERY });
-
+            const first = LINKS_PER_PAGE;
+            const skip = 0;
+            const orderBy = 'createdAt_DESC';
+            const data = store.readQuery({
+              query: ALL_LINKS_QUERY,
+              variables: { first, skip, orderBy },
+            });
             data.allLinks.splice(0, 0, createLink);
+            data.allLinks.pop();
             store.writeQuery({
               query: ALL_LINKS_QUERY,
               data,
+              variables: { first, skip, orderBy },
             });
           },
         });
-        history.push('/');
+        history.push('/new/1');
       } else {
         // console.log(err);
       }

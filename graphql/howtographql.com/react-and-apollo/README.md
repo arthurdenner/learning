@@ -1,20 +1,3 @@
-# react-redux-saga-antd-starter
+# Hackernews Clone
 
-A React + Redux + Redux Actions + Redux Saga + Ant-Design frontend boilerplate.
-
-- [x] Ant-Design
-- [x] Babel
-- [x] ESLint (Airbnb)
-- [x] LESS
-- [x] PostCSS
-- [x] React
-- [x] React Router
-- [x] React Router Redux
-- [x] Redux
-- [x] Redux Actions
-- [x] Redux Saga
-
-```
-npm start
-```
-Open `http://localhost:3000` in your browser.
+Link to the tutorial series: https://www.howtographql.com/react-apollo/0-introduction/

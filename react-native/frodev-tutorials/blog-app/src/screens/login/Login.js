@@ -7,10 +7,13 @@ import {
   TextInput,
   Title,
 } from '~/components';
+import { SCREENS } from '~/constants';
 
-const Login = () => (
+const Login = ({ navigation: { navigate } }) => (
   <LoginWrapper>
-    <Title h4>Sign in to start blogging</Title>
+    <Title h4>
+      Sign in to start blogging
+    </Title>
 
     <FormContainer>
       <FormField>
@@ -27,7 +30,11 @@ const Login = () => (
       </FormField>
     </FormContainer>
 
-    <Button info title={'Login'} />
+    <Button
+      info
+      title={'Login'}
+      onPress={() => navigate(SCREENS.BLOGS)}
+    />
   </LoginWrapper>
 );
 

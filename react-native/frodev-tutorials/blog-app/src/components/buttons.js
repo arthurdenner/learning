@@ -18,9 +18,9 @@ const ButtonText = styled.Text`
 `;
 
 export const Button = ({ title, onPress, ...otherProps }) => (
-<TouchableOpacity onPress={onPress}>
-  <ButtonWrapper {...otherProps}>
-    <ButtonText>{title}</ButtonText>
-  </ButtonWrapper>
-</TouchableOpacity>
+  <TouchableOpacity onPress={onPress}>
+    <ButtonWrapper {...otherProps}>
+      <ButtonText>{title}</ButtonText>
+    </ButtonWrapper>
+  </TouchableOpacity>
 );

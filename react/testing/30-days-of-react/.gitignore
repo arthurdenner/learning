@@ -1,0 +1,11 @@
+*.log
+.idea
+.sass-cache
+.vscode
+jsconfig.json
+build
+dist
+lib
+node_modules
+jspm_packages
+yarn-error

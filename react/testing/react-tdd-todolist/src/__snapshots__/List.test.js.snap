@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`list component should match its snapshot with items 1`] = `
+<ul>
+  <li>
+    Learn react
+  </li>
+  <li>
+    rest
+  </li>
+  <li>
+    go out
+  </li>
+</ul>
+`;
+
+exports[`list component should render a todo item 1`] = `<ul />`;

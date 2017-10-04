@@ -1,18 +1,40 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import List from './List';
 
 class App extends Component {
+  state = {
+    term: '',
+    items: [],
+  };
+
+  onChange = ({ target: { value } }) =>
+    this.setState({
+      term: value,
+    });
+
+  onSubmit = event => {
+    event.preventDefault();
+
+    const { items, term } = this.state;
+
+    this.setState({
+      term: '',
+      items: items.concat(term),
+    });
+  };
+
   render() {
+    const { items, term } = this.state;
+
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+      <div style={{ padding: '1em' }}>
+        <form onSubmit={this.onSubmit}>
+          <input onChange={this.onChange} value={term} />
+          <button type="submit" style={{ marginLeft: '1em' }}>
+            Submit
+          </button>
+        </form>
+        <List items={items} />
       </div>
     );
   }

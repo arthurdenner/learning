@@ -4,16 +4,16 @@ import { mount, shallow } from 'enzyme';
 import ProductList from './components/product-list';
 import App from './App';
 
-let mockProducts, wrapper;
+const mockProducts = [
+  { id: 1, name: 'Mock Product 1', brand: 'MockBrandA' },
+  { id: 2, name: 'Mock Product 2', brand: 'MockBrandB' },
+  { id: 3, name: 'Mock Product 3', brand: 'MockBrandC' },
+];
+
+let wrapper;
 
 describe('app container', () => {
   beforeEach(() => {
-    mockProducts = [
-      { id: 1, name: 'Mock Product 1', brand: 'MockBrandA' },
-      { id: 2, name: 'Mock Product 2', brand: 'MockBrandB' },
-      { id: 3, name: 'Mock Product 3', brand: 'MockBrandC' },
-    ];
-
     wrapper = shallow(<App />);
   });
 
@@ -60,5 +60,21 @@ describe('app container', () => {
     wrapper.find('input').simulate('change', { target: { value: 'abc' } });
 
     expect(wrapper.state('filterString')).toEqual('abc');
+  });
+
+  it('should filter the products correctly', () => {
+    let productList;
+
+    wrapper.setState({ products: mockProducts, filterString: 'abc' });
+
+    productList = wrapper.find(ProductList);
+
+    expect(productList.prop('products')).toEqual([]);
+
+    wrapper.setState({ filterString: 'branda' });
+
+    productList = wrapper.find(ProductList);
+
+    expect(productList.prop('products')).toEqual([mockProducts[0]]);
   });
 });

@@ -1,0 +1,8 @@
+# .prettierignore
+
+.vscode/
+dist/
+node_modules/
+package.json
+webpack.config.js
+src/www/

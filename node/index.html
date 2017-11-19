@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Chat with Socket.io</title>
+</head>
+
+<body>
+  <h1 id="status">Connecting...</h1>
+
+  <section class="chat">
+    <div class="message"></div>
+  </section>
+
+  <section>
+    <form id="chat-form">
+      <input id="chat-input" type="text" />
+      <input type="submit" value="Send">
+    </form>
+  </section>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script>
+    var socket = io.connect('http://localhost:8080');
+
+    socket.on('user_connected', () => {
+      $('#status').html('Connected.');
+
+      var username = prompt('What is your username?');
+
+      socket.emit('join_chat', username);
+
+      var input = $('#chat-input');
+
+      input.attr('placeholder', `${username}, type here...`);
+    });
+
+    socket.on('message_received', data => insertMessage(data));
+
+    $('#chat-form').submit(e => {
+      e.preventDefault();
+
+      var input = $('#chat-input');
+
+      var message = input.val();
+
+      socket.emit('send_message', message);
+
+      input.val('');
+    });
+
+    function insertMessage(data) {
+      var chat = document.querySelector('.chat');
+      var message = document.createElement('div');
+
+      message.className = 'message';
+      message.append(data);
+
+      chat.appendChild(message);
+    }
+  </script>
+</body>
+
+</html>

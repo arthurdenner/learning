@@ -6,21 +6,53 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Chat with Socket.io</title>
+  <style>
+    .message {
+      padding: 0.5em;
+      background-color: rgba(0, 0, 0, 0.082);
+    }
+
+    .client {
+      padding: 0.5em;
+      background-color: rgba(0, 255, 0, 0.432);
+    }
+
+    .leaving {
+      padding: 0.5em;
+      background-color: rgba(255, 38, 0, 0.432);
+    }
+
+    .info {
+      padding: 0.5em;
+      background-color: rgba(0, 255, 255, 0.178);
+    }
+
+    #chat-form {
+      margin-top: 0.8em;
+      display: flex;
+    }
+
+    #chat-input {
+      flex: 1;
+      padding: 0.2em 0.5em;
+    }
+
+    #chat-submit {
+      margin-left: 0.5em;
+    }
+  </style>
 </head>
 
 <body>
   <h1 id="status">Connecting...</h1>
 
   <section class="chat">
-    <div class="message"></div>
   </section>
 
-  <section>
-    <form id="chat-form">
-      <input id="chat-input" type="text" />
-      <input type="submit" value="Send">
-    </form>
-  </section>
+  <form id="chat-form">
+    <input id="chat-input" type="text" />
+    <input id="chat-submit" type="submit" value="Send">
+  </form>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -39,7 +71,13 @@
       input.attr('placeholder', `${username}, type here...`);
     });
 
-    socket.on('message_received', data => insertMessage(data));
+    socket.on('message_received', data => insertMessage(data, 'message'));
+
+    socket.on('new_client', data => insertMessage(data, 'client'));
+
+    socket.on('client_left', data => insertMessage(data, 'leaving'));
+
+    socket.on('no_users_online', data => insertMessage(data, 'info'));
 
     $('#chat-form').submit(e => {
       e.preventDefault();
@@ -53,11 +91,11 @@
       input.val('');
     });
 
-    function insertMessage(data) {
+    function insertMessage(data, type) {
       var chat = document.querySelector('.chat');
       var message = document.createElement('div');
 
-      message.className = 'message';
+      message.className = type;
       message.append(data);
 
       chat.appendChild(message);

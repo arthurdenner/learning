@@ -8,9 +8,7 @@ import (
 )
 
 func main() {
-	args := os.Args
-
-	if len(args) < 2 {
+	if len(os.Args) < 2 {
 		log.Fatal("You should pass an IP address and an optional listen flag if you want to be a host")
 	}
 
@@ -18,12 +16,12 @@ func main() {
 
 	flag.BoolVar(&isHost, "listen", false, "Listens on the specified IP address")
 	flag.Parse()
+	args := flag.Args()
+	ip := args[0]
 
 	if isHost {
-		ip := args[2]
 		lib.RunHost(ip)
 	} else {
-		ip := args[1]
 		lib.RunGuest(ip)
 	}
 }

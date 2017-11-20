@@ -17,6 +17,7 @@ func RunHost(ip string) {
 
 	listener, listenErr := net.Listen("tcp", ipAndPort)
 	printError(listenErr)
+	defer listener.Close()
 
 	fmt.Println("Listening on", ipAndPort)
 
@@ -25,17 +26,27 @@ func RunHost(ip string) {
 
 	fmt.Println("New connection accepted")
 
+	reader := bufio.NewReader(conn)
+	replyReader := bufio.NewReader(os.Stdin)
+
 	for {
-		handleHost(conn)
+		handleHost(conn, reader, replyReader)
 	}
 }
 
-func handleHost(conn net.Conn) {
-	createMessageBuffer(conn)
+func handleHost(conn net.Conn, reader, replyReader *bufio.Reader) {
+
+	message, readErr := reader.ReadString('\n')
+	printError(readErr)
+
+	fmt.Println("Message received:", message)
 
 	fmt.Print("Send message: ")
 
-	createReplyBuffer(conn)
+	replyMessage, replyErr := replyReader.ReadString('\n')
+	printError(replyErr)
+
+	fmt.Fprint(conn, replyMessage)
 }
 
 // RunGuest receives an IP address as argument
@@ -45,36 +56,28 @@ func RunGuest(ip string) {
 
 	conn, dialErr := net.Dial("tcp", ipAndPort)
 	printError(dialErr)
+	defer conn.Close()
+
+	reader := bufio.NewReader(conn)
+	replyReader := bufio.NewReader(os.Stdin)
 
 	for {
-		handleGuest(conn)
+		handleGuest(conn, reader, replyReader)
 	}
 }
 
-func handleGuest(conn net.Conn) {
+func handleGuest(conn net.Conn, reader, replyReader *bufio.Reader) {
 	fmt.Print("Send message: ")
-
-	createReplyBuffer(conn)
-
-	createMessageBuffer(conn)
-}
-
-func createMessageBuffer(conn net.Conn) {
-	reader := bufio.NewReader(conn)
-
-	message, readErr := reader.ReadString('\n')
-	printError(readErr)
-
-	fmt.Println("Message received:", message)
-}
-
-func createReplyBuffer(conn net.Conn) {
-	replyReader := bufio.NewReader(os.Stdin)
 
 	replyMessage, replyErr := replyReader.ReadString('\n')
 	printError(replyErr)
 
 	fmt.Fprint(conn, replyMessage)
+
+	message, readErr := reader.ReadString('\n')
+	printError(readErr)
+
+	fmt.Println("Message received:", message)
 }
 
 func printError(err error) {

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Advanced Patterns by Kent C Dodds</title>
+  <link href="https://fonts.googleapis.com/css?family=Antic+Slab" rel="stylesheet">
+  <style>
+    *,
+    *:before,
+    *:after {
+      box-sizing: inherit;
+    }
+
+    body {
+      font-family: 'Antic Slab', serif;
+    }
+
+    hr {
+      width: 100%;
+    }
+
+    /*
+      toggle styles copied and modified from
+      https://codepen.io/mallendeo/pen/eLIiG
+      by Mauricio Allende (https://mallendeo.com/)
+    */
+
+    .toggle-btn {
+      display: inline-block;
+      outline: 0;
+      width: 4em;
+      height: 2em;
+      position: relative;
+      cursor: pointer;
+      user-select: none;
+      background: #fbfbfb;
+      border-radius: 2em;
+      padding: 2px;
+      transition: all 0.4s ease;
+      border: 1px solid #e8eae9;
+    }
+
+    .toggle-btn:focus::after,
+    .toggle-btn:active::after {
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1),
+      0 4px 0 rgba(0, 0, 0, 0.08),
+      inset 0px 0px 0px 1.5px #9c9c9c;
+    }
+
+    .toggle-btn::after {
+      left: 0;
+      position: relative;
+      display: block;
+      content: '';
+      width: 50%;
+      height: 100%;
+      border-radius: 2em;
+      background: #fbfbfb;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+      padding 0.3s ease, margin 0.3s ease;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1),
+      0 4px 0 rgba(0, 0, 0, 0.08);
+    }
+
+    .toggle-btn.toggle-btn-on::after {
+      left: 50%;
+    }
+
+    .toggle-btn.toggle-btn-on {
+      background: #86d993;
+    }
+
+    .toggle-btn.toggle-btn-on:active {
+      box-shadow: none;
+    }
+
+    .toggle-btn.toggle-btn-on:active::after {
+      margin-left: -0.8em;
+    }
+
+    .toggle-btn:active::after {
+      padding-right: 0.8em;
+    }
+
+    .toggle-input {
+      display: none;
+    }
+  </style>
+  <script src="https://unpkg.com/react@16.0.0/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@16.0.0/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/prop-types@15.6.0/prop-types.js"></script>
+  <script src="https://unpkg.com/babel-standalone@6.26.0/babel.js"></script>
+  <script src="https://cdn.rawgit.com/kentcdodds/ea2fdfc82f79228a6be641c78dc0e1b9/raw/0f792eb8dfb3bf993bdf50c9656f12090ed344e6/hoist-non-react-statics.umd.js"></script>
+
+  <div id="⚛️"></div>
+  <script type="text/babel">
+    const TOGGLE_CONTEXT = '__toggle__'
+
+    const withToggle = Component => {
+      const Wrapper = ({ innerRef, ...props }, context) =>  {
+        const toggleContext = context[TOGGLE_CONTEXT]
+        return (
+          <Component
+            ref={innerRef}
+            {...toggleContext}
+            {...props}
+          />
+        )
+      }
+
+      Wrapper.contextTypes = {
+        [TOGGLE_CONTEXT]: PropTypes.object.isRequired,
+      }
+
+      Wrapper.displayName = `withToggle(${Component.displayName || Component.name})`
+
+      Wrapper.WrappedComponent = Component
+      
+      return hoistNonReactStatics(Wrapper, Component)
+    }
+
+    const ToggleOn = ({ children, on}) => on && children
+
+    const ToggleOff = ({ children, on}) => !on && children
+
+    const ToggleButton = ({ on, toggle, ...props }) =>  <Switch on={on} onClick={toggle} {...props} />
+
+    class MyToggle extends React.Component {
+      static ToggleMessage = withToggle(
+        ({ on }) => on && 'Warning: The button is toggled on'
+      )
+
+      focus = () => this.button.focus()
+      
+      render() {
+        const { on, toggle } = this.props
+
+        return (
+          <div>
+            <button
+              onClick={toggle}
+              ref={button => (this.button = button)}
+            >
+              {on ? 'on' : 'off'}
+            </button>
+          </div>
+        )
+      }
+    }
+    
+    const MyToggleWrapper = withToggle(MyToggle)
+    
+    class Toggle extends React.Component {
+      static On = withToggle(ToggleOn)
+      static Off = withToggle(ToggleOff)
+      static Button = withToggle(ToggleButton)
+      static defaultProps = { onToggle: () => {} }
+      static childContextTypes = {
+        [TOGGLE_CONTEXT]: PropTypes.object.isRequired,
+      }
+
+      state = { on: false }
+
+      getChildContext() {
+        return {
+          [TOGGLE_CONTEXT]: {
+            on: this.state.on,
+            toggle: this.toggle,
+          }
+        }
+      }
+      
+      toggle = () =>
+        this.setState(
+          ({ on }) => ({ on: !on }),
+          () => this.props.onToggle(this.state.on),
+        )
+      
+      render() {
+        return (
+          <div>{this.props.children}</div>
+        )
+      }
+    }
+
+    class App extends React.Component {
+      render() {
+        return (
+          <Toggle onToggle={on => on ? this.myToggle.focus() : null}>
+            <Toggle.On>The switch is on</Toggle.On>
+            <Toggle.Button />
+            <Toggle.Off>The switch is off</Toggle.Off>
+            <hr />
+            <MyToggleWrapper innerRef={myToggle => (this.myToggle = myToggle)} />
+            <MyToggleWrapper.ToggleMessage />
+          </Toggle>
+        )
+      }
+    }
+    
+    /* Implementation details... */
+    
+    const Switch = ({ on, className = '', ...props }) => (
+      <div className="toggle">
+        <input
+          className="toggle-input"
+          type="checkbox"
+        />
+        <button
+          className={`${className} toggle-btn ${on
+            ? 'toggle-btn-on'
+            : 'toggle-btn-off'}`}
+          aria-expanded={on}
+          {...props}
+        />
+      </div>
+    )
+
+    ReactDOM.render(
+      <div
+        style={{
+          marginTop: 40,
+          display: 'flex',
+          justifyContent: 'center',
+          flexDirection: 'column',
+          textAlign: 'center',
+        }}
+      >
+        <App />
+      </div>,
+      document.getElementById('⚛️'),
+    )
+  </script>
+</head>
+
+<body>
+
+</body>
+
+</html>

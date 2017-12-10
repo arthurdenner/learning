@@ -93,6 +93,7 @@
   <script src="https://unpkg.com/react-dom@16.0.0/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/prop-types@15.6.0/prop-types.js"></script>
   <script src="https://unpkg.com/babel-standalone@6.26.0/babel.js"></script>
+  <script src="https://unpkg.com/react-broadcast@0.5.2/umd/react-broadcast.js"></script>
   <script src="https://cdn.rawgit.com/kentcdodds/ea2fdfc82f79228a6be641c78dc0e1b9/raw/0f792eb8dfb3bf993bdf50c9656f12090ed344e6/hoist-non-react-statics.umd.js"></script>
 
   <div id="⚛️"></div>
@@ -152,51 +153,99 @@
       }
     }
 
-    class App extends React.Component {
-      initialState = {
-        timesClicked: 0,
-        on: false,
+    class ToggleProvider extends React.Component {
+      static channel = '__toggle_channel__';
+      
+      render() {
+        const { children, ...props } = this.props;
+
+        return (
+          <Toggle
+            {...props}
+            render={toggle => (
+              <ReactBroadcast.Broadcast
+                channel={ToggleProvider.channel}
+                value={toggle}
+              >
+                {children}
+              </ReactBroadcast.Broadcast>
+            )}
+          />
+        )
+      }
+    }
+
+    const ConnectedToggle = (props, context) => (
+      <ReactBroadcast.Subscriber channel={ToggleProvider.channel}>
+        {toggle => props.render(toggle)}
+      </ReactBroadcast.Subscriber>
+    )
+
+    const withToggle = Component => {
+      const Wrapper = (props, context) => {
+        const { innerRef, ...otherProps } = props
+
+        return (
+          <ConnectedToggle render={toggle => (
+            <Component
+              ref={innerRef}
+              toggle={toggle}
+              {...otherProps}
+            />
+          )} />
+        )
       }
 
-      state = this.initialState
+      Wrapper.displayName = `withToggle(${Component.displayName || Component.name})`;
+      Wrapper.propTypes = { innerRef: PropTypes.func }
+      Wrapper.WrappedComponent = Component;
 
-      handleReset = () => {
-        this.setState(this.initialState)
-      }
+      return hoistNonReactStatics(Wrapper, Component);
+    }
 
-      handleToggle = () => {
-        this.setState(({ on, timesClicked }) => ({
-          timesClicked: timesClicked + 1,
-          on: timesClicked < 4 ? !on : false,
-        }))
+    const Faces = withToggle(({ toggle }) => (
+      <div>
+        <div key="happy">{toggle.on ? '🦄' : 'happy'}</div>
+        <div key="sad">{toggle.on ? '🙁' : 'sad'}</div>
+        <div key="stunned">{toggle.on ? '😯' : 'stunned'}</div>
+      </div>
+    ))
+
+    const Title = () => (
+      <ConnectedToggle render={toggle => (
+        <div>
+          What is nice and we all should use? <br/>
+          {toggle.on ? 'Emojis! ✌️ 🤘 👌' : 'Try to guess...'}
+          <Switch on={toggle.on} {...toggle.getTogglerProps()} />
+        </div>
+      )} />
+    )
+
+    const Header = () => <Faces />
+
+    const Body = () => <Title />
+
+    class UpdateBlocker extends React.Component {
+      shouldComponentUpdate() {
+        return false
       }
 
       render() {
-        const { on, timesClicked } = this.state;
-        
+        return this.props.children
+      }
+    }
+
+    class App extends React.Component {
+      render() {
         return (
-          <Toggle
-            on={on}
-            onReset={this.handleReset}
-            onToggle={this.handleToggle}
-            render={({ getTogglerProps, on, reset, toggle }) => (
+          <ToggleProvider>
+            <UpdateBlocker>
               <div>
-                {on ? 'The switch is on' : 'The switch is off'}
-                <Switch on={on} {...getTogglerProps()} />
-                {timesClicked < 5 ?
-                  `Times clicked: ${timesClicked}` :
-                  `You've clicked too much!`}
-                <hr />
-                <button onClick={reset}>Reset</button>
-                <hr />
-                <button {...getTogglerProps({
-                  onClick: () => alert('test'),
-                })}>
-                  {on ? 'on' : 'off'}
-                </button>
+                <Header />
+                <Body />
               </div>
-            )}
-          />
+            </UpdateBlocker>
+          </ToggleProvider>
         )
       }
     }

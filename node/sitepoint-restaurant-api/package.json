@@ -1,0 +1,30 @@
+{
+  "name": "sitepoint-restaurant-api",
+  "version": "0.0.1",
+  "description": "Restaurant API from Sitepoint",
+  "main": "dist",
+  "scripts": {
+    "build": "babel src -s -D -d dist",
+    "dev": "NODE_ENV=development nodemon -w src/ --exec \"babel-node src \"",
+    "lint": "eslint src",
+    "prestart": "npm run -s build",
+    "start": "NODE_ENV=production pm2 start dist",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Arthur Denner <arthurdenner7@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "mongoose": "^4.13.7"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-eslint": "^8.1.1",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "eslint": "^4.14.0",
+    "nodemon": "^1.14.3"
+  }
+}

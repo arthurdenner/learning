@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import FoodTruck from './foodtruck';
 
 const reviewSchema = mongoose.Schema({
   title: {

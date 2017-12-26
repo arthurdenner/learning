@@ -2,12 +2,14 @@ import mongoose from 'mongoose';
 import { Router } from 'express';
 import FoodTruck from '../models/foodtruck';
 import Review from '../models/review';
+import { authenticate } from '../middleware/authMiddleware';
+mongoose.Promise = global.Promise;
 
-export default ({ config, db }) => {
+export default () => {
   const api = Router();
 
   // 'v1/foodtruck/add'
-  api.post('/add', ({ body }, res) => {
+  api.post('/add', authenticate, ({ body }, res) => {
     const newFoodTruck = new FoodTruck();
     newFoodTruck.name = body.name;
     newFoodTruck.foodtype = body.foodtype;
@@ -48,7 +50,7 @@ export default ({ config, db }) => {
   /* TODO: Verify how to replace the properties
     passed on the request object */
   // 'v1/foodtruck/:id'
-  api.put('/:id', ({ body, params }, res) => {
+  api.put('/:id', authenticate, ({ body, params }, res) => {
     FoodTruck.findById(params.id, (err, foodtruck) => {
       if (err) {
         res.send(err);
@@ -67,8 +69,8 @@ export default ({ config, db }) => {
   });
 
   // 'v1/foodtruck/:id'
-  api.delete('/:id', (req, res) => {
-    FoodTruck.remove({ _id: req.params.id }, (err, foodtruck) => {
+  api.delete('/:id', authenticate, (req, res) => {
+    FoodTruck.remove({ _id: req.params.id }, err => {
       if (err) {
         res.send(err);
       }
@@ -79,7 +81,7 @@ export default ({ config, db }) => {
 
   // add review to a foodtruck
   // 'v1/foodtruck/reviews/add/:id
-  api.post('/reviews/add/:id', ({ body, params }, res) => {
+  api.post('/reviews/add/:id', authenticate, ({ body, params }, res) => {
     FoodTruck.findById(params.id, (err, foodtruck) => {
       if (err) {
         res.send(err);
@@ -90,7 +92,7 @@ export default ({ config, db }) => {
       newReview.text = body.text;
       newReview.foodtruck = foodtruck._id;
 
-      newReview.save((err, review) => {
+      newReview.save(err => {
         if (err) {
           res.send(err);
         }

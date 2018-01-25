@@ -3,6 +3,7 @@ import { KeyboardAvoidingView, StatusBar } from 'react-native';
 import {
   ClearButton,
   Container,
+  Header,
   InputWithButton,
   LastConverted,
   Logo,
@@ -32,10 +33,15 @@ class Home extends Component {
     console.log('press swap');
   };
 
+  handleOptionsPress = () => {
+    console.log('press options');
+  };
+
   render() {
     return (
       <Container>
         <StatusBar barStyle="light-content" translucend={false} />
+        <Header onPress={this.handleOptionsPress} />
         <KeyboardAvoidingView behavior="padding">
           <Logo />
           <InputWithButton
@@ -51,17 +57,17 @@ class Home extends Component {
             onPress={this.handlePressQuoteCurrency}
             value={TEMP_QUOTE_PRICE}
           />
+          <LastConverted
+            base={TEMP_BASE_CURRENCY}
+            conversionRate={TEMP_CONVERSION_RATE}
+            date={TEMP_CONVERSION_DATE}
+            quote={TEMP_QUOTE_CURRENCY}
+          />
+          <ClearButton
+            onPress={this.handleSwapCurrency}
+            text="Reverse Currencies"
+          />
         </KeyboardAvoidingView>
-        <LastConverted
-          base={TEMP_BASE_CURRENCY}
-          conversionRate={TEMP_CONVERSION_RATE}
-          date={TEMP_CONVERSION_DATE}
-          quote={TEMP_QUOTE_CURRENCY}
-        />
-        <ClearButton
-          onPress={this.handleSwapCurrency}
-          text="Reverse Currencies"
-        />
       </Container>
     );
   }

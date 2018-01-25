@@ -41,6 +41,7 @@
   "dependencies": {
     "@expo/vector-icons": "^6.2.2",
     "color": "^2.0.1",
+    "date-fns": "^1.29.0",
     "expo": "^23.0.4",
     "prop-types": "^15.6.0",
     "react": "16.0.0",

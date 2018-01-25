@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { KeyboardAvoidingView, StatusBar } from 'react-native';
-import { Container, InputWithButton, Logo } from '../components';
+import { ClearButton, Container, InputWithButton, Logo } from '../components';
 
 class Home extends Component {
   handlePressBaseCurrency = () => {
@@ -13,6 +13,10 @@ class Home extends Component {
 
   handleChangeText = text => {
     console.log('change text', text);
+  };
+
+  handleSwapCurrency = () => {
+    console.log('press swap');
   };
 
   render() {
@@ -35,6 +39,10 @@ class Home extends Component {
             value="79.74"
           />
         </KeyboardAvoidingView>
+        <ClearButton
+          onPress={this.handleSwapCurrency}
+          text="Reverse Currencies"
+        />
       </Container>
     );
   }

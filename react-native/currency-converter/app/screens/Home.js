@@ -27,6 +27,7 @@ class Home extends Component {
     isFetching: PropTypes.bool,
     lastConvertedDate: PropTypes.instanceOf(Date).isRequired,
     navigation: PropTypes.object.isRequired,
+    primaryColor: PropTypes.string.isRequired,
     quoteCurrency: PropTypes.string.isRequired,
     quotePrice: PropTypes.string.isRequired,
     swapCurrency: PropTypes.func.isRequired,
@@ -79,27 +80,30 @@ class Home extends Component {
       conversionRate,
       isFetching,
       lastConvertedDate,
+      primaryColor,
       quoteCurrency,
       quotePrice,
     } = this.props;
 
     return (
-      <Container>
+      <Container backgroundColor={primaryColor}>
         <StatusBar barStyle="light-content" translucend={false} />
         <Header onPress={this.handleOptionsPress} />
         <KeyboardAvoidingView behavior="padding">
-          <Logo />
+          <Logo tintColor={primaryColor} />
           <InputWithButton
             buttonText={baseCurrency}
             keyboardType="numeric"
             onChangeText={this.handleBaseAmount}
             onPress={this.handlePressBaseCurrency}
+            textColor={primaryColor}
             value={amount.toString()}
           />
           <InputWithButton
             buttonText={quoteCurrency}
             editable={false}
             onPress={this.handlePressQuoteCurrency}
+            textColor={primaryColor}
             value={isFetching ? '...' : quotePrice}
           />
           <LastConverted
@@ -118,12 +122,13 @@ class Home extends Component {
   }
 }
 
-const mapStateToProps = ({ currencies }) => ({
+const mapStateToProps = ({ currencies, theme }) => ({
   amount: currencies.amount,
   baseCurrency: currencies.baseCurrency,
   conversionRate: getConversionRate(currencies),
   isFetching: getConversionData(currencies).isFetching,
   lastConvertedDate: getLastConvertedDate(currencies),
+  primaryColor: theme.primaryColor,
   quoteCurrency: currencies.quoteCurrency,
   quotePrice: getQuotePrice(currencies),
 });

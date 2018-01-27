@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import {
   Animated,
   Keyboard,
@@ -13,6 +14,10 @@ const isAndroid = Platform.OS === 'android';
 const ANIMATION_DURATION = 250;
 
 class Logo extends Component {
+  static propTypes = {
+    tintColor: PropTypes.string.isRequired,
+  };
+
   state = {
     containerImageWidth: new Animated.Value(styles.$largeContainerSize),
     imageWidth: new Animated.Value(styles.$largeImageSize),
@@ -64,13 +69,14 @@ class Logo extends Component {
   };
 
   render() {
+    const { tintColor } = this.props;
     const { containerImageWidth, imageWidth } = this.state;
 
     const containerImageStyles = [
       styles.containerImage,
       { width: containerImageWidth, height: containerImageWidth },
     ];
-    const imageStyles = [styles.logo, { width: imageWidth }];
+    const imageStyles = [styles.logo, { width: imageWidth, tintColor }];
 
     return (
       <View style={styles.container}>

@@ -4,13 +4,14 @@ import { connect } from 'redux-zero/react';
 import { FlatList, StatusBar, View } from 'react-native';
 import { actions as currenciesActions } from '../store/currencies';
 import { ListItem, Separator } from '../components/List';
-import currencies from '../data/currencies';
+import allCurrencies from '../data/currencies';
 
 class CurrencyList extends Component {
   static propTypes = {
-    selectedCurrency: PropTypes.string.isRequired,
     changeCurrency: PropTypes.func.isRequired,
     navigation: PropTypes.object.isRequired,
+    primaryColor: PropTypes.string.isRequired,
+    selectedCurrency: PropTypes.string.isRequired,
   };
 
   handlePress = value => {
@@ -23,15 +24,16 @@ class CurrencyList extends Component {
   };
 
   render() {
-    const { selectedCurrency } = this.props;
+    const { primaryColor, selectedCurrency } = this.props;
 
     return (
       <View style={{ flex: 1 }}>
         <StatusBar barStyle="default" translucent={false} />
         <FlatList
-          data={currencies}
+          data={allCurrencies}
           renderItem={({ item }) => (
             <ListItem
+              backgroundColor={primaryColor}
               onPress={() => this.handlePress(item)}
               selected={item === selectedCurrency}
               text={item}
@@ -45,12 +47,13 @@ class CurrencyList extends Component {
   }
 }
 
-const mapStateToProps = ({ currencies }, { navigation }) => {
+const mapStateToProps = ({ currencies, theme }, { navigation }) => {
   const { type } = navigation.state.params;
   const selectedCurrency = currencies[type];
 
   return {
     selectedCurrency,
+    primaryColor: theme.primaryColor,
   };
 };
 

@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { KeyboardAvoidingView, StatusBar } from 'react-native';
+import { connect } from 'redux-zero/react';
+import { actions as currencyActions } from '../store/currencies';
 import {
   ClearButton,
   Container,
@@ -19,6 +21,8 @@ const TEMP_CONVERSION_DATE = new Date();
 
 class Home extends Component {
   static propTypes = {
+    changeAmount: PropTypes.func.isRequired,
+    swapCurrency: PropTypes.func.isRequired,
     navigation: PropTypes.object.isRequired,
   };
 
@@ -38,12 +42,16 @@ class Home extends Component {
     });
   };
 
-  handleChangeText = text => {
-    console.log('change text', text);
+  handleBaseAmount = amount => {
+    const { changeAmount } = this.props;
+
+    changeAmount(amount);
   };
 
   handleSwapCurrency = () => {
-    console.log('press swap');
+    const { swapCurrency } = this.props;
+
+    swapCurrency();
   };
 
   handleOptionsPress = () => {
@@ -63,7 +71,7 @@ class Home extends Component {
             buttonText={TEMP_BASE_CURRENCY}
             defaultValue={TEMP_BASE_PRICE}
             keyboardType="numeric"
-            onChangeText={this.handleChangeText}
+            onChangeText={this.handleBaseAmount}
             onPress={this.handlePressBaseCurrency}
           />
           <InputWithButton
@@ -88,4 +96,4 @@ class Home extends Component {
   }
 }
 
-export default Home;
+export default connect(null, currencyActions)(Home);

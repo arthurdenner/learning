@@ -1,9 +1,6 @@
 import React from 'react';
 import EStyleSheet from 'react-native-extended-stylesheet';
-import CurrencyList from './screens/CurrencyList';
-import Home from './screens/Home';
-import Options from './screens/Options';
-import Themes from './screens/Themes';
+import Navigation from './config/routes';
 
 EStyleSheet.build({
   $border: '#E2E2E2',
@@ -18,4 +15,4 @@ EStyleSheet.build({
   $primaryPurple: '#9E768F',
 });
 
-export default () => <Themes />;
+export default () => <Navigation />;

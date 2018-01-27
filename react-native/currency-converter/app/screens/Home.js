@@ -2,14 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { KeyboardAvoidingView, StatusBar } from 'react-native';
 import { connect } from 'redux-zero/react';
-import { actions as currenciesActions } from '../store/currencies';
 import {
-  getConversionData,
-  getConversionRate,
-  getLastConvertedDate,
-  getQuotePrice,
-} from '../selectors/currencies';
-import {
+  connectAlert,
   ClearButton,
   Container,
   Header,
@@ -17,13 +11,23 @@ import {
   LastConverted,
   Logo,
 } from '../components';
+import { actions as currenciesActions } from '../store/currencies';
+import {
+  getConversionData,
+  getConversionRate,
+  getLastConvertedDate,
+  getQuotePrice,
+} from '../selectors/currencies';
 
 class Home extends Component {
   static propTypes = {
+    alertWithType: PropTypes.func.isRequired,
     amount: PropTypes.number.isRequired,
     baseCurrency: PropTypes.string.isRequired,
     changeAmount: PropTypes.func.isRequired,
     conversionRate: PropTypes.number.isRequired,
+    currencyError: PropTypes.string,
+    getInitialConversionRate: PropTypes.func.isRequired,
     isFetching: PropTypes.bool,
     lastConvertedDate: PropTypes.instanceOf(Date).isRequired,
     navigation: PropTypes.object.isRequired,
@@ -34,8 +38,26 @@ class Home extends Component {
   };
 
   static defaultProps = {
+    currencyError: null,
     isFetching: false,
   };
+
+  componentWillMount() {
+    const { getInitialConversionRate } = this.props;
+
+    getInitialConversionRate();
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (
+      nextProps.currencyError &&
+      nextProps.currencyError !== this.props.currencyError
+    ) {
+      const { alertWithType, currencyError } = nextProps;
+
+      alertWithType('error', 'Error', currencyError);
+    }
+  }
 
   handlePressBaseCurrency = () => {
     const { navigation: { navigate } } = this.props;
@@ -126,6 +148,7 @@ const mapStateToProps = ({ currencies, theme }) => ({
   amount: currencies.amount,
   baseCurrency: currencies.baseCurrency,
   conversionRate: getConversionRate(currencies),
+  currencyError: currencies.error,
   isFetching: getConversionData(currencies).isFetching,
   lastConvertedDate: getLastConvertedDate(currencies),
   primaryColor: theme.primaryColor,
@@ -133,4 +156,4 @@ const mapStateToProps = ({ currencies, theme }) => ({
   quotePrice: getQuotePrice(currencies),
 });
 
-export default connect(mapStateToProps, currenciesActions)(Home);
+export default connect(mapStateToProps, currenciesActions)(connectAlert(Home));

@@ -1,6 +1,7 @@
 import React from 'react';
 import EStyleSheet from 'react-native-extended-stylesheet';
 import Navigation from './config/routes';
+import { AlertProvider } from './components/Alert';
 
 EStyleSheet.build({
   $border: '#E2E2E2',
@@ -15,4 +16,8 @@ EStyleSheet.build({
   $primaryPurple: '#9E768F',
 });
 
-export default () => <Navigation />;
+export default () => (
+  <AlertProvider>
+    <Navigation />
+  </AlertProvider>
+);

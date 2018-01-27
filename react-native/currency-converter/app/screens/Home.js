@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { KeyboardAvoidingView, StatusBar } from 'react-native';
 import { connect } from 'redux-zero/react';
-import { actions as currencyActions } from '../store/currencies';
+import { actions as currenciesActions } from '../store/currencies';
 import {
   getConversionData,
   getConversionRate,
@@ -41,6 +41,7 @@ class Home extends Component {
 
     navigate('CurrencyList', {
       title: 'Base Currency',
+      type: 'baseCurrency',
     });
   };
 
@@ -49,6 +50,7 @@ class Home extends Component {
 
     navigate('CurrencyList', {
       title: 'Quote Currency',
+      type: 'quoteCurrency',
     });
   };
 
@@ -126,4 +128,4 @@ const mapStateToProps = ({ currencies }) => ({
   quotePrice: getQuotePrice(currencies),
 });
 
-export default connect(mapStateToProps, currencyActions)(Home);
+export default connect(mapStateToProps, currenciesActions)(Home);
